@@ -22,8 +22,8 @@ public class ProdukService {
         return ProdukRepository.findAll();
     }
     
-    public void insert(Produk produk){
-        ProdukRepository.save(produk);
+    public Produk getProduk(Long id){
+        return ProdukRepository.findById(id).get();
     }
     
     
