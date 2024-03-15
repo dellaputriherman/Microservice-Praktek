@@ -4,32 +4,32 @@
  */
 package com.della.order.service;
 
-
 import com.della.order.entity.Order;
 import com.della.order.repository.OrderRepository;
+import com.della.order.vo.Produk;
+import com.della.order.vo.ResponseTemplate;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 /**
  *
  * @author ASUS
  */
-
 
 @Service
 public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+    
+    @Autowired
+    private RestTemplate restTemplate;
 
     public List<Order> getAll() {
         return orderRepository.findAll();
-    }
-
-    public Order getOrderById(Long id) {
-        return orderRepository.getReferenceById(id);
     }
 
     public void insert(Order order) {
@@ -56,6 +56,26 @@ public class OrderService {
         if(jumlah > 0 && order.getTotal() != total) {
             order.setTotal(total);
         }
+    }
+    
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id).get();
+    }
+    
+    public List<ResponseTemplate>getOrderWithProdukById(Long id){
+        List<ResponseTemplate> responseList = new ArrayList<>();
+        Order order = getOrderById(id);
+        Produk produk = restTemplate.getForObject("http://localhost:9008/api/v1/product/"
+                + order.getProdukId(), Produk.class);
+        ResponseTemplate vo = new ResponseTemplate();
+        vo.setOrder(order);
+        vo.setProduk(produk);
+        responseList.add(vo);
+        return responseList;
+    }
+
+    public void update(Long id, int jumlah, String tanggal, String status) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
 
